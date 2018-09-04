@@ -6,48 +6,57 @@
 //
 
 /*process control block type*/
-typedef struct pcb_t{
-    /*process queue fields*/
-    struct pcb_t* pnext,/*pointer to next entry*/ /*process tree fields*/ *pprnt, /*pointer to parent*/ *pchild, /*pointer to 1st child*/ *psib; /*pointer to sibling*/
-    statetps; /*processor state*/
-    int* psemAdd; /*pointer to sema4 on*/
-    /*which process blocked*/
-    /*plus other entries to be added later*/
-    }pcb_t;
-typedef struct pcb_PTR{
-    pcb_t* pcb
-}
 
 void freePcb (pcb_PTR p){
     
 }
+
 pcb_PTR allocPcb (){
     
 }
+
 void initPcbs (){
     
 }
+
 int emptyProcQ (pcb_PTR tp){
-    return (tp->pcb == NULL)
+    return (tp == NULL);
 }
+
 void insertProcQ (pcb_PTR *tp, pcd_PTR p){
-    
-}
-pcb_PTR removeProcQ (pcb_PTR *tp){
     if (emptyProcQ(tp)){
-        return (NULL)
+        tp = p;
     } else {
-        if 
+        p->next = tp->pnext;
+        tp.next = *p;
     }
 }
+
+pcb_PTR removeProcQ (pcb_PTR *tp){
+    if (emptyProcQ(tp)){
+        return (NULL);
+    } else {
+        if (tp == tp->pnext){
+            pcb_PTR temp = tp->pnext;
+            tp.next = NULL;
+            return (temp);
+        } else {
+            pcb_PTR temp = tp->pnext;
+            tp.next = tp->pnext->pnext;
+            return (temp);
+        }
+    }
+}
+
 pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
     
 }
+
 pcb_PTR headProcQ (pcb_PTR tp){
     if (emptyProcQ(tp)){
-        return (NULL)
+        return (NULL);
     } else {
-        return (tp->pcb->next)
+        return (tp->pcb->pnext);
     }
 }
 pcb_PTR mkEmptyProcQ (){
