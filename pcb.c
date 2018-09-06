@@ -1,39 +1,66 @@
 //
 //  pcb.c
-//  
+//
 //
 //  Created by Matthew McAvey on 9/3/18.
 //
 
+//GLOBAL VARIABLES
+#include "const.h"
+#include "types.h"
+#include "pcb.e"
+pcb_PTR pcbFree_h;
+pcb_PTR pcbList_h;
+
 /*process control block type*/
 
+/* puts it onto the free list */
 void freePcb (pcb_PTR p){
-    
+
 }
 
+/* takes it off the free list*/
 pcb_PTR allocPcb (){
-    
+    pcb_PTR allocPcbTemp = removeProcQ(&(pcbList_h));
+
+    if (allocPcbTemp != NULL){
+        allocPcbTemp->pnext = NULL;
+        allocPcbTemp->pprnt = NULL;
+        allocPcbTemp->pchild = NULL;
+        allocPcbTemp->psib = NULL;
+        allocPcbTemp->psemAdd = NULL; //maybe have to take it out
+    }
+    return (allocPcbTemp);
 }
 
 void initPcbs (){
-    
+    static pcb_t procTable[MAXPROC];
+    pcbList_h = mkEmptyProcQ();
+    for (int i=0; i<MAXPROC; i++;){
+        freePcb (&(procTable[i]));
+    }
 }
 
 int emptyProcQ (pcb_PTR tp){
     return (tp == NULL);
 }
 
-void insertProcQ (pcb_PTR *tp, pcd_PTR p){
-    if (emptyProcQ(tp)){
-        tp = p;
+void insertProcQ (pcb_PTR *tp, pcb_PTR p){
+    if (emptyProcQ(*tp)){
+        *tp = p;
+        p->pnext = p;
+        p->pprevious = p;
     } else {
-        p->next = tp->pnext;
-        tp.next = *p;
+        p->pnext = *tp->pnext;
+        p->pprevious = *tp;
+        *tp->next = *p;
+        p->pnext->pprevious = p;
+        *tp = p; //when we come back i get to tell you i told you so
     }
 }
 
 pcb_PTR removeProcQ (pcb_PTR *tp){
-    if (emptyProcQ(tp)){
+    /*if (emptyProcQ(tp)){
         return (NULL);
     } else {
         if (tp == tp->pnext){
@@ -45,18 +72,41 @@ pcb_PTR removeProcQ (pcb_PTR *tp){
             tp.next = tp->pnext->pnext;
             return (temp);
         }
-    }
+    }*/
+    return (outProcQ(tp, *tp->pnext));
 }
 
 pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
-    
+    if (emptyProcQ(tp)){
+        return (NULL);
+    } else {
+        if (*tp->pnext == tp){
+            if (*tp == p){
+                pcb_PTR temp = *tp;
+                tp = NULL;
+                return (temp);
+            } else {
+                return (NULL);
+            }
+        } else {
+            pcb_PTR target = tp;
+            while (*target->pnext != tp){
+                if (*target->pnext = p){
+                    p->pprevious = *target;
+                    *target->pnext = p->pnext;
+                    return (p);
+                }
+            }
+            return (NULL);
+        }
+    }
 }
 
 pcb_PTR headProcQ (pcb_PTR tp){
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
-        return (tp->pcb->pnext);
+        return (*tp->pnext);
     }
 }
 pcb_PTR mkEmptyProcQ (){
