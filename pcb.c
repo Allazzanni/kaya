@@ -1,55 +1,53 @@
 //
 //  pcb.c
-//  
 //
-//  Created by Matthew McAvey on 9/3/18.
+//
+//  Created by Matthew McAvey and Blake Eichenberger on 9/3/18.
+//Last editted by Blake Eichenberger @11:30am
+
 //
 
-/*process control block type*/
-typedef struct pcb_t{
-    /*process queue fields*/
-    struct pcb_t* pnext,/*pointer to next entry*/ /*process tree fields*/ *pprnt, /*pointer to parent*/ *pchild, /*pointer to 1st child*/ *psib; /*pointer to sibling*/
-    statetps; /*processor state*/
-    int* psemAdd; /*pointer to sema4 on*/
-    /*which process blocked*/
-    /*plus other entries to be added later*/
-    }pcb_t;
-typedef struct pcb_PTR{
-    pcb_t* pcb
-}
+//#include "const.h"
+#include "../h/types.h"
+//#include "pcb.e"
+#define NULL 0
+
 
 void freePcb (pcb_PTR p){
-    
+
 }
 pcb_PTR allocPcb (){
-    
+
 }
 void initPcbs (){
-    
+
 }
-int emptyProcQ (pcb_PTR tp){
-    return (tp->pcb == NULL)
+pcb_PTR emptyProcQ (pcb_PTR tp){
+  if (tp =! NULL) {
+    return(tp);
+
+  }
+
 }
-void insertProcQ (pcb_PTR *tp, pcd_PTR p){
-    
+void insertProcQ (pcb_PTR *tp, pcb_PTR p){
+
 }
 pcb_PTR removeProcQ (pcb_PTR *tp){
     if (emptyProcQ(tp)){
-        return (NULL)
-    } else {
-        if 
+        return (*tp=NULL);
     }
+
 }
 pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
-    
+
 }
 pcb_PTR headProcQ (pcb_PTR tp){
     if (emptyProcQ(tp)){
-        return (NULL)
+        return (NULL);
     } else {
-        return (tp->pcb->next)
+        return (tp->pcb->next);
     }
 }
 pcb_PTR mkEmptyProcQ (){
-    return (NULL)
+    return (NULL);
 }
