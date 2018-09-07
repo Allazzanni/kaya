@@ -15,12 +15,18 @@ typedef unsigned int memaddr;
 
 typedef struct pcb_t{
     /*process queue fields*/
-    struct pcb_t* pnext,/*pointer to next entry*/ /*process tree fields*/ *pprnt, /*pointer to parent*/ *pchild, /*pointer to 1st child*/ *psib, *pprevious; /*pointer to sibling*/
-    //statetps; /*processor state*/
+    struct pcb_t*
+    *pnext;/*pointer to next entry*/
+     /*process tree fields*/
+    *pprnt; /*pointer to parent*/
+    *pchild; /*pointer to 1st child*/
+    *psib;
+    *pprevious; /*pointer to sibling*/
+    statetps; /*processor state*/
     int* psemAdd; /*pointer to sema4 on*/
-    /*which process blocked*/
+     /*which process blocked*/
     /*plus other entries to be added later*/
-}pcb_t, *pcb_PTR;
+  }pcb_t, *pcb_PTR;
 
 
 typedef struct {
