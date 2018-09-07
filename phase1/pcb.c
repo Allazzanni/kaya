@@ -1,19 +1,15 @@
 //
 //  pcb.c
-
-=======
 //
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
 //
 //
 //  Created by Matthew McAvey and Blake Eichenberger on 9/3/18.
 //Last editted by Blake Eichenberger @11:30am
-
 //
 
-//#include "const.h"
+#include "const.h"
 #include "../h/types.h"
-//#include "pcb.e"
+#include "pcb.e"
 #define NULL 0
 
 
@@ -33,7 +29,6 @@ void freePcb (pcb_PTR p){
 /* takes it off the free list*/
 pcb_PTR allocPcb (){
 
-=======
     pcb_PTR allocPcbTemp = removeProcQ(&(pcbList_h));
 
     if (allocPcbTemp != NULL){
@@ -44,22 +39,14 @@ pcb_PTR allocPcb (){
         allocPcbTemp->psemAdd = NULL; //maybe have to take it out
     }
     return (allocPcbTemp);
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
+
 }
 
 void initPcbs (){
-<<<<<<< HEAD
-
-}pcb_PTR emptyProcQ (pcb_PTR tp){
-  if (tp =! NULL) {
-    return(tp);
-
-  }
+}
 
 }
 void insertProcQ (pcb_PTR *tp, pcb_PTR p){
-
-=======
     static pcb_t procTable[MAXPROC];
     pcbList_h = mkEmptyProcQ();
     for (int i=0; i<MAXPROC; i++;){
@@ -71,28 +58,27 @@ int emptyProcQ (pcb_PTR tp){
     return (tp == NULL);
 }
 
-void insertProcQ (pcb_PTR *tp, pcb_PTR p){
-    if (emptyProcQ(*tp)){
-        *tp = p;
-        p->pnext = p;
-        p->pprevious = p;
-    } else {
-        p->pnext = *tp->pnext;
-        p->pprevious = *tp;
-        *tp->next = *p;
-        p->pnext->pprevious = p;
-        *tp = p; //when we come back i get to tell you i told you so
-    }
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
+// void insertProcQ (pcb_PTR *tp, pcb_PTR p){
+//     if (emptyProcQ(*tp)){
+//         *tp = p;
+//         p->pnext = p;
+//         p->pprevious = p;
+//     } else {
+//         p->pnext = *tp->pnext;
+//         p->pprevious = *tp;
+//         *tp->next = *p;
+//         p->pnext->pprevious = p;
+//         *tp = p; //when we come back i get to tell you i told you so
+//     }
+
 }
 
 pcb_PTR removeProcQ (pcb_PTR *tp){
-<<<<<<< HEAD
     if (emptyProcQ(tp)){
         return (*tp=NULL);
     }
 
-=======
+}
     /*if (emptyProcQ(tp)){
         return (NULL);
     } else {
@@ -106,14 +92,9 @@ pcb_PTR removeProcQ (pcb_PTR *tp){
             return (temp);
         }
     }*/
-    return (outProcQ(tp, *tp->pnext));
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
-}
 
 pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
-<<<<<<< HEAD
 
-=======
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
@@ -137,18 +118,13 @@ pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
             return (NULL);
         }
     }
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
 }
 
 pcb_PTR headProcQ (pcb_PTR tp){
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
-<<<<<<< HEAD
-        return (tp->pcb->next);
-=======
         return (*tp->pnext);
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
     }
 }
 pcb_PTR mkEmptyProcQ (){

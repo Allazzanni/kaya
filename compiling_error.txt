@@ -1,0 +1,4 @@
+D:\Users\Blake\Desktop\kaya\pcb.c:11:24: fatal error: ../h/types.h: No such file or directory
+ #include "../h/types.h"
+                        ^
+compilation terminated.
