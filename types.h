@@ -13,6 +13,15 @@ typedef signed int cpu_t;
 
 typedef unsigned int memaddr;
 
+typedef struct pcb_t{
+    /*process queue fields*/
+    struct pcb_t* pnext,/*pointer to next entry*/ /*process tree fields*/ *pprnt, /*pointer to parent*/ *pchild, /*pointer to 1st child*/ *psib, *pprevious; /*pointer to sibling*/
+    //statetps; /*processor state*/
+    int* psemAdd; /*pointer to sema4 on*/
+    /*which process blocked*/
+    /*plus other entries to be added later*/
+}pcb_t, *pcb_PTR;
+
 
 typedef struct {
 	unsigned int d_status;
@@ -20,6 +29,8 @@ typedef struct {
 	unsigned int d_data0;
 	unsigned int d_data1;
 } device_t;
+
+#define MAXPROC 20
 
 #define t_recv_status		d_status
 #define t_recv_command		d_command
