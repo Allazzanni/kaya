@@ -1,6 +1,6 @@
 //
 //  pcb.c
-<<<<<<< HEAD
+
 =======
 //
 >>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
@@ -16,17 +16,14 @@
 //#include "pcb.e"
 #define NULL 0
 
-<<<<<<< HEAD
+
 =======
 //GLOBAL VARIABLES
 #include "const.h"
 #include "types.h"
 #include "pcb.e"
-pcb_PTR pcbFree_h;
-pcb_PTR pcbList_h;
 
-/*process control block type*/
->>>>>>> 250accc6106b964942dbcab327f8d1dfa9dfa423
+pcb_PTR pcbList_h;
 
 /* puts it onto the free list */
 void freePcb (pcb_PTR p){
@@ -35,7 +32,6 @@ void freePcb (pcb_PTR p){
 
 /* takes it off the free list*/
 pcb_PTR allocPcb (){
-<<<<<<< HEAD
 
 =======
     pcb_PTR allocPcbTemp = removeProcQ(&(pcbList_h));
@@ -54,8 +50,7 @@ pcb_PTR allocPcb (){
 void initPcbs (){
 <<<<<<< HEAD
 
-}
-pcb_PTR emptyProcQ (pcb_PTR tp){
+}pcb_PTR emptyProcQ (pcb_PTR tp){
   if (tp =! NULL) {
     return(tp);
 
