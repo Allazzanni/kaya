@@ -23,7 +23,7 @@ pcb_PTR pcbList_h;
 
 /* puts it onto the free list */
 void freePcb (pcb_PTR p){
-
+    insertProcQ(*pcbList_h, p)
 }
 
 /* takes it off the free list*/
