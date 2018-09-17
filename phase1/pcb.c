@@ -83,38 +83,7 @@ pcb_t* removeProcQ (pcb_t* *tp){
     }*/
 
 pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
-    pcb_PTR ret, temp;
-    if(((*tp) == NULL) || (p == NULL)) {
-        return NULL;
-    }
-    if((*tp) == p){
-        
-        if ((((*tp) -> pnext) == (*tp))) {
-            ret = (*tp);
-            (*tp) = mkEmptyProcQ();
-            return ret;
-        } else {
-            (*tp)->pprevious->pnext = (*tp)->pnext;
-            (*tp)->pnext->pprevious = (*tp)->pprevious;
-            *tp = (*tp)->pprevious;
-        }
-        return p;
-    } else {
-        temp = (*tp) -> pnext;
-        while(temp != (*tp)) {
-            if(temp == p){
-                ret = temp;
-                ret -> pprevious -> pnext = ret -> pnext;
-                ret -> pnext -> pprevious = ret -> pprevious;
-                ret -> pnext = NULL;
-                ret -> pprevious = NULL;
-                return ret;
-            }
-            temp = temp -> pnext;
-        }
-        return NULL;
-    }
-/*
+    
     if (emptyProcQ(*tp) || p == NULL){
         return (NULL);
     } else {
@@ -143,7 +112,6 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             return (NULL);
         }
     }
- */
 }
 
 pcb_t* headProcQ (pcb_t* tp){
