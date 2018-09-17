@@ -20,8 +20,8 @@ typedef struct pcb_t{
     *pprnt, /*pointer to parent*/
     *pchild, /*pointer to 1st child*/
     *psib,
-    *pprevious, /*pointer to sibling*/
-    /* statetps; /*processor state*/ 
+    *pprevious; /*pointer to sibling*/
+    /* statetps; /*processor state*/
     int* psemAdd; /*pointer to sema4 on*/
      /*which process blocked*/
     /*plus other entries to be added later*/
