@@ -26,7 +26,7 @@ pcb_t* allocPcb (){
         allocPcbTemp->pprnt = NULL;
         allocPcbTemp->pchild = NULL;
         allocPcbTemp->psib = NULL;
-        allocPcbTemp->psemAdd = NULL; 
+        allocPcbTemp->psemAdd = NULL;
     }
     return (allocPcbTemp);
 
@@ -53,7 +53,7 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
      } else {
          p->pnext = (*tp)->pnext;
          p->pprevious = *tp;
-         *tp->pnext = *p;
+         (*tp)->pnext = *p;
          p->pnext->pprevious = p;
          *tp = p;
      }
@@ -61,7 +61,7 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
 }
 
 pcb_t* removeProcQ (pcb_t* *tp){
-    return(outProcQ(tp, *((*tp)->pnext)));
+    return(outProcQ(tp, (*tp)->pnext));
 
 }
     /*if (emptyProcQ(tp)){
@@ -83,7 +83,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
     if (emptyProcQ(*tp)){
         return (NULL);
     } else {
-        if (*(*(tp)->pnext) == *tp){
+        if (tp->pnext == *tp){
             if (*tp == p){
                 pcb_t* temp = *tp;
                 tp = NULL;
@@ -93,16 +93,16 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
         } else {
             pcb_t* target = *tp;
-            while (*(target->pnext) != *tp){
-                if (*target->pnext == p){
+            while (*(target->pnext) != tp){
+                if ((*target)->pnext == p){
                     *(p->pnext)->pprevious = *target;
-                    *target->pnext = p->pnext;
+                    (*target)->pnext = p->pnext;
                     return (p);
                 }
             }
-            if (*(target->pnext) == *p){
+            if ((*target)->pnext == *p){
                 *(p->pnext)->pprevious = *target;
-                *target->pnext = p->pnext;
+                (*target)->pnext = p->pnext;
                 return (p);
             }
             return (NULL);
@@ -114,7 +114,7 @@ pcb_t* headProcQ (pcb_t* tp){
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
-        return (*(tp->pnext));
+        return ((*tp)->pnext);
     }
 }
 pcb_t* mkEmptyProcQ (){
@@ -123,7 +123,7 @@ pcb_t* mkEmptyProcQ (){
 /*tree methods****************************************************/
 
 int emptyChild (pcb_t* p){
-    return (*(p->pchild) == NULL);
+    return ((*p)->pchild == NULL);
 }
 
 void insertChild (pcb_t* prnt, pcb_t *p){
@@ -138,24 +138,24 @@ pcb_t* removeChild(pcb_t* p){
     if (emptyChild(p)){
         return (NULL);
     } else {
-        pcb_t* temp = *(p->pchild);
-        p->pchild = *(temp->psib);
+        pcb_t* temp = p->pchild;
+        p->pchild = (*temp)->psib;
         return (temp);
     }
 }
 
 pcb_t* outChild(pcb_t* p){
-    if (*(p->pprnt) == NULL){
+    if ((*p)->pprnt == NULL){
         return (NULL);
     } else {
-        if (*(p->pprnt->pchild) == *p){
-            return (removeChild(*(p->pprnt)));
+        if (*((*p)->pprnt)->pchild == *p){
+            return (removeChild((*p)->pprnt));
         } else {
-            pcb_t* target = *(p->parent->child);
-            while (*(target->psib) != *p){
-                target = *(target->psib);
+            pcb_t* target = *(p->pprnt->pchild);
+            while ((*target)->psib != *p){
+                target = (*target)->psib;
             }
-            target->psib = *(p->psib);
+            target->psib = (*p)->psib;
             return (p);
         }
     }
