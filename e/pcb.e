@@ -9,7 +9,7 @@
 *  Written by Mikeyg
 */
 
-#include "types.h"
+#include "../h/types.h"
 
 extern void freePcb (pcb_PTR p);
 extern pcb_PTR allocPcb ();
