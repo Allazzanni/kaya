@@ -1,11 +1,3 @@
-/*
-//  pcb.c
-//
-//
-//
-//  Created by Matthew McAvey and Blake Eichenberger on 9/3/18.
-//
-*/
 
 #include "../h/const.h"
 #include "../h/types.h"
@@ -34,7 +26,7 @@ pcb_t* allocPcb (){
         allocPcbTemp->pprnt = NULL;
         allocPcbTemp->pchild = NULL;
         allocPcbTemp->psib = NULL;
-        allocPcbTemp->psemAdd = NULL; //maybe have to take it out
+        allocPcbTemp->psemAdd = NULL; 
     }
     return (allocPcbTemp);
 
