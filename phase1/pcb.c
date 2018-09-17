@@ -12,7 +12,7 @@
 #include "../e/pcb.e"
 
 
-=======
+
 /*GLOBAL VARIABLES */
 
 
@@ -45,7 +45,7 @@ void initPcbs (){
     int i;
     pcbList_h = mkEmptyProcQ();
     for (i=0; i<MAXPROC; i++){
-        freePCB (&(procTable[i]));
+        freePcb (&(procTable[i]));
     }
 }
 
@@ -59,9 +59,9 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
          p->pnext = p;
          p->pprevious = p;
      } else {
-         p->pnext = *tp->pnext;
+         p->pnext = (*tp)->pnext;
          p->pprevious = *tp;
-         *tp->next = *p;
+         *tp->pnext = *p;
          p->pnext->pprevious = p;
          *tp = p;
      }
@@ -69,7 +69,7 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
 }
 
 pcb_t* removeProcQ (pcb_t* *tp){
-    return(outProcQ(tp, *(tp->next)));
+    return(outProcQ(tp, *((*tp)->pnext)));
 
 }
     /*if (emptyProcQ(tp)){
@@ -88,10 +88,10 @@ pcb_t* removeProcQ (pcb_t* *tp){
 
 pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
 
-    if (emptyProcQ(tp)){
+    if (emptyProcQ(*tp)){
         return (NULL);
     } else {
-        if (*(tp->pnext) == *tp){
+        if (*(*(tp)->pnext) == *tp){
             if (*tp == p){
                 pcb_t* temp = *tp;
                 tp = NULL;
@@ -101,7 +101,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
         } else {
             pcb_t* target = *tp;
-            while (*(target->pnext) != tp){
+            while (*(target->pnext) != *tp){
                 if (*target->pnext == p){
                     *(p->pnext)->pprevious = *target;
                     *target->pnext = p->pnext;
