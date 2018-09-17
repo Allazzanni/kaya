@@ -16,7 +16,7 @@
 #include "../h/types.h"
 
 #include "/usr/local/include/umps2/umps/libumps.e"
-#include "../e/pcb.e"
+#include "../phase1/pcb.c"
 #include "../e/asl.e"
 
 
