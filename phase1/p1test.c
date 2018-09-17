@@ -135,6 +135,7 @@ void main() {
 		if ((procp[i] = allocPcb()) == NULL)
 			adderrbuf("allocPcb: unexpected NULL   ");
 	}
+    addokbuf("2");
 	if (allocPcb() != NULL) {
 		adderrbuf("allocPcb: allocated more than MAXPROC entries   ");
 	}
