@@ -84,7 +84,7 @@ pcb_t* removeProcQ (pcb_t* *tp){
 
 pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
 
-    if (emptyProcQ(*tp)){
+    if (emptyProcQ(*tp) || p == NULL){
         return (NULL);
     } else {
         if ((*tp)->pnext == *tp){
@@ -97,7 +97,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
         } else {
             pcb_t* target = *tp;
-            while (target->pnext != *tp){
+            while (*(target->pnext) != **tp){
                 if (target->pnext == p){
                     *(p->pnext)->pprevious = *target;
                     target->pnext = p->pnext;
