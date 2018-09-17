@@ -105,8 +105,8 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
                 }
             }
             if (target->pnext == p){
-                *(p->pnext)->pprevious = *target;
-                target->pnext = p->pnext;
+                p->pnext->pprevious = target->pprevious;
+                target->pprevious->pnext = p->pnext;
                 return (p);
             }
             return (NULL);
