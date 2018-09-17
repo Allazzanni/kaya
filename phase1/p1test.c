@@ -201,7 +201,7 @@ void main() {
     addokbuf("5");
     if (removeProcQ(&qa) != NULL)
 		adderrbuf("removeProcQ: removes too many entries   ");
-
+        addokbuf("7");
         if (!emptyProcQ(qa))
                 adderrbuf("emptyProcQ: unexpected FALSE   ");
     addokbuf("6");
