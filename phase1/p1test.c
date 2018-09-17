@@ -195,14 +195,16 @@ void main() {
 		freePcb(q);
         addokbuf("3");
 	}
+    addokbuf("4");
 	if (q != lastproc)
 		adderrbuf("removeProcQ: failed on last entry   ");
-	if (removeProcQ(&qa) != NULL)
+    addokbuf("5");
+    if (removeProcQ(&qa) != NULL)
 		adderrbuf("removeProcQ: removes too many entries   ");
 
         if (!emptyProcQ(qa))
                 adderrbuf("emptyProcQ: unexpected FALSE   ");
-
+    addokbuf("6");
 	addokbuf("insertProcQ, removeProcQ and emptyProcQ ok   \n");
 	addokbuf("process queues module ok      \n");
 
