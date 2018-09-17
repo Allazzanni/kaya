@@ -4,32 +4,30 @@
 //
 //
 //  Created by Matthew McAvey and Blake Eichenberger on 9/3/18.
-//Last editted by Blake Eichenberger @11:30am
+//
 //
 
-#include "const.h"
+#include "../h/const.h"
 #include "../h/types.h"
-#include "pcb.e"
+#include "../e/pcb.e"
 #define NULL 0
 
 
 =======
 //GLOBAL VARIABLES
-#include "const.h"
-#include "types.h"
-#include "pcb.e"
 
-pcb_PTR pcbList_h;
+
+HIDDEN pcb_t* pcbList_h;
 
 /* puts it onto the free list */
-void freePcb (pcb_PTR p){
-    insertProcQ(*pcbList_h, p)
+void freePcb (pcb_t* p){
+    insertProcQ(*pcbList_h, p);
 }
 
 /* takes it off the free list*/
-pcb_PTR allocPcb (){
+pcb_t* allocPcb (){
 
-    pcb_PTR allocPcbTemp = removeProcQ(&(pcbList_h));
+    pcb_t* allocPcbTemp = removeProcQ(&(pcbList_h));
 
     if (allocPcbTemp != NULL){
         allocPcbTemp->pnext = NULL;
@@ -43,14 +41,11 @@ pcb_PTR allocPcb (){
 }
 
 void initPcbs (){
-}
-
-}
-void insertProcQ (pcb_PTR *tp, pcb_PTR p){
     static pcb_t procTable[MAXPROC];
+    int i;
     pcbList_h = mkEmptyProcQ();
-    for (int i=0; i<MAXPROC; i++;){
-        freePcb (&(procTable[i]));
+    for (i=0; i<MAXPROC; i++){
+        freePCB (&(procTable[i]));
     }
 }
 
@@ -58,25 +53,23 @@ int emptyProcQ (pcb_PTR tp){
     return (tp == NULL);
 }
 
-// void insertProcQ (pcb_PTR *tp, pcb_PTR p){
-//     if (emptyProcQ(*tp)){
-//         *tp = p;
-//         p->pnext = p;
-//         p->pprevious = p;
-//     } else {
-//         p->pnext = *tp->pnext;
-//         p->pprevious = *tp;
-//         *tp->next = *p;
-//         p->pnext->pprevious = p;
-//         *tp = p; //when we come back i get to tell you i told you so
-//     }
+void insertProcQ (pcb_t* *tp, pcb_t* p){
+     if (emptyProcQ(*tp)){
+         *tp = p;
+         p->pnext = p;
+         p->pprevious = p;
+     } else {
+         p->pnext = *tp->pnext;
+         p->pprevious = *tp;
+         *tp->next = *p;
+         p->pnext->pprevious = p;
+         *tp = p;
+     }
 
 }
 
-pcb_PTR removeProcQ (pcb_PTR *tp){
-    if (emptyProcQ(tp)){
-        return (*tp=NULL);
-    }
+pcb_t* removeProcQ (pcb_t* *tp){
+    return(outProcQ(tp, *(tp->next)));
 
 }
     /*if (emptyProcQ(tp)){
@@ -93,40 +86,86 @@ pcb_PTR removeProcQ (pcb_PTR *tp){
         }
     }*/
 
-pcb_PTR outProcQ (pcb_PTR *tp, pcb_PTR p){
+pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
 
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
-        if (*tp->pnext == tp){
+        if (*(tp->pnext) == *tp){
             if (*tp == p){
-                pcb_PTR temp = *tp;
+                pcb_t* temp = *tp;
                 tp = NULL;
                 return (temp);
             } else {
                 return (NULL);
             }
         } else {
-            pcb_PTR target = tp;
-            while (*target->pnext != tp){
-                if (*target->pnext = p){
-                    p->pprevious = *target;
+            pcb_t* target = *tp;
+            while (*(target->pnext) != tp){
+                if (*target->pnext == p){
+                    *(p->pnext)->pprevious = *target;
                     *target->pnext = p->pnext;
                     return (p);
                 }
+            }
+            if (*(target->pnext) == *p){
+                *(p->pnext)->pprevious = *target;
+                *target->pnext = p->pnext;
+                return (p);
             }
             return (NULL);
         }
     }
 }
 
-pcb_PTR headProcQ (pcb_PTR tp){
+pcb_t* headProcQ (pcb_t* tp){
     if (emptyProcQ(tp)){
         return (NULL);
     } else {
-        return (*tp->pnext);
+        return (*(tp->pnext));
     }
 }
-pcb_PTR mkEmptyProcQ (){
+pcb_t* mkEmptyProcQ (){
     return (NULL);
 }
+/*tree methods****************************************************/
+
+int emptyChild (pcb_t* p){
+    return (*(p->pchild) == NULL);
+}
+
+void insertChild (pcb_t* prnt, pcb_t *p){
+    if (prnt != NULL){
+        p->psib = prnt->pchild;
+        p->pprnt = prnt;
+        prnt->pchild = *p;
+    }
+}
+
+pcb_t* removeChild(pcb_t* p){
+    if (emptyChild(p)){
+        return (NULL);
+    } else {
+        pcb_t* temp = *(p->pchild);
+        p->pchild = *(temp->psib);
+        return (temp);
+    }
+}
+
+pcb_t* outChild(pcb_t* p){
+    if (*(p->pprnt) == NULL){
+        return (NULL);
+    } else {
+        if (*(p->pprnt->pchild) == *p){
+            return (removeChild(*(p->pprnt)));
+        } else {
+            pcb_t* target = *(p->parent->child);
+            while (*(target->psib) != *p){
+                target = *(target->psib);
+            }
+            target->psib = *(p->psib);
+            return (p);
+        }
+    }
+}
+
