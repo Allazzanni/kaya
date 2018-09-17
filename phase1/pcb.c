@@ -93,14 +93,14 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
         } else {
             pcb_t* target = *tp;
-            while (target->pnext != tp){
+            while (target->pnext != *tp){
                 if (target->pnext == p){
                     *(p->pnext)->pprevious = *target;
                     target->pnext = p->pnext;
                     return (p);
                 }
             }
-            if (target->pnext == *p){
+            if (target->pnext == p){
                 *(p->pnext)->pprevious = *target;
                 target->pnext = p->pnext;
                 return (p);
