@@ -93,7 +93,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
         } else {
             pcb_t* target = *tp;
-            while (target->pnext) != tp){
+            while (target->pnext != tp){
                 if (target->pnext == p){
                     *(p->pnext)->pprevious = *target;
                     target->pnext = p->pnext;
@@ -148,11 +148,11 @@ pcb_t* outChild(pcb_t* p){
     if (p->pprnt == NULL){
         return (NULL);
     } else {
-        if (p->pprnt->pchild == *p){
+        if (p->pprnt->pchild == p){
             return (removeChild(p->pprnt));
         } else {
             pcb_t* target = p->pprnt->pchild;
-            while (target->psib != *p){
+            while (target->psib != p){
                 target = target->psib;
             }
             target->psib = p->psib;
