@@ -1,27 +1,27 @@
-//
+/*
 //  pcb.c
 //
 //
 //
 //  Created by Matthew McAvey and Blake Eichenberger on 9/3/18.
 //
-//
+*/
 
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../e/pcb.e"
-#define NULL 0
 
 
 =======
-//GLOBAL VARIABLES
+/*GLOBAL VARIABLES */
 
 
 HIDDEN pcb_t* pcbList_h;
 
 /* puts it onto the free list */
 void freePcb (pcb_t* p){
-    insertProcQ(*pcbList_h, p);
+    p->pnext = pcbList_h;
+    pcbList_h = p;
 }
 
 /* takes it off the free list*/
