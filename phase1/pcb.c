@@ -87,7 +87,6 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
     if(((*tp) == NULL) || (p == NULL)) {
         return NULL;
     }
-    /* only one thing in queue and it is what we want */
     if((*tp) == p){
         
         if ((((*tp) -> pnext) == (*tp))) {
@@ -101,12 +100,9 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
         }
         return p;
     } else {
-        /* node is somewhere else, start at p_next */
         temp = (*tp) -> pnext;
         while(temp != (*tp)) {
-            /* found node ? */
             if(temp == p){
-                /* unleave node and return it */
                 ret = temp;
                 ret -> pprevious -> pnext = ret -> pnext;
                 ret -> pnext -> pprevious = ret -> pprevious;
@@ -116,7 +112,6 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
             }
             temp = temp -> pnext;
         }
-        /* node not in list here */
         return NULL;
     }
 /*
