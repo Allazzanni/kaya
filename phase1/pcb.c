@@ -71,7 +71,7 @@ pcb_t* removeProcQ (pcb_t* *tp){
     return (outProcQ (tp, (*tp)->pnext));
 }*/
     pcb_t* temp;
-    if (emptyProcQ(tp)){
+    if (emptyProcQ(*tp)){
         return (NULL);
     } else {
         if (*tp == (*tp)->pnext){
