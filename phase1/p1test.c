@@ -194,8 +194,8 @@ void main() {
 	}
 	if (q != lastproc)
 		adderrbuf("removeProcQ: failed on last entry   ");
-  /*  if (removeProcQ(&qa) != NULL)
-		adderrbuf("removeProcQ: removes too many entries   ");*/
+    if (removeProcQ(&qa) != NULL)
+		adderrbuf("removeProcQ: removes too many entries   ");
         if (!emptyProcQ(qa))
                 adderrbuf("emptyProcQ: unexpected FALSE   ");
 	addokbuf("insertProcQ, removeProcQ and emptyProcQ ok   \n");
