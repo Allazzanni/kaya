@@ -68,15 +68,15 @@ pcb_t* removeProcQ (pcb_t* *tp){
     pcb_PTR ret;
     if(emptyProcQ(*tp)) { /* queue is empty */
         return NULL;
-    } else if ((*tp) -> p_next == (*tp)) { /* only one item in queue */
+    } else if ((*tp) -> pnext == (*tp)) { /* only one item in queue */
         ret = (*tp);
         (*tp) = mkEmptyProcQ(); /* make tp an empty queue */
         return ret;
     } /* else */
     /* n items in queue */
-    ret  = (*tp) -> p_next;
-    (*tp) -> p_next -> p_next -> p_prev = (*tp);
-    (*tp) -> p_next = ((*tp) -> p_next -> p_next);
+    ret  = (*tp) -> pnext;
+    (*tp) -> pnext -> pnext -> pprevious = (*tp);
+    (*tp) -> pnext = ((*tp) -> pnext -> pnext);
     return ret;
     /* return (outProcQ (tp, (*tp)->pnext)); */
 }
