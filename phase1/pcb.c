@@ -65,20 +65,19 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
 }
 
 pcb_t* removeProcQ (pcb_t* *tp){
-    pcb_PTR ret;
-    if(emptyProcQ(*tp)) { /* queue is empty */
+    /*pcb_PTR ret;
+    if(emptyProcQ(*tp)) {
         return NULL;
-    } else if ((*tp) -> pnext == (*tp)) { /* only one item in queue */
+    } else if ((*tp) -> pnext == (*tp)) {
         ret = (*tp);
-        (*tp) = mkEmptyProcQ(); /* make tp an empty queue */
+        (*tp) = mkEmptyProcQ();
         return ret;
-    } /* else */
-    /* n items in queue */
+    }
     ret  = (*tp) -> pnext;
     (*tp) -> pnext -> pnext -> pprevious = (*tp);
     (*tp) -> pnext = ((*tp) -> pnext -> pnext);
-    return ret;
-    /* return (outProcQ (tp, (*tp)->pnext)); */
+    return ret;*/
+    return (outProcQ (tp, (*tp)->pnext));
 }
     /*if (emptyProcQ(tp)){
         return (NULL);
@@ -102,7 +101,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
         if ((*tp)->pnext == *tp){
             if (*tp == p){
                 pcb_t* temp = *tp;
-                tp = NULL;
+                tp = mkEmptyProcQ();
                 return (temp);
             } else {
                 return (NULL);
