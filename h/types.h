@@ -26,6 +26,11 @@ typedef struct pcb_t{
     /*plus other entries to be added later*/
   }pcb_t, *pcb_PTR;
 
+typedef struct semd_t {
+    struct semd_t *sNext;
+    int *sSemAdd;
+    pcb_t *sProcQ
+}semd_t;
 
 typedef struct {
 	unsigned int d_status;
