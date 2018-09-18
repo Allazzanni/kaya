@@ -45,7 +45,7 @@ void initPcbs (){
     }
 }
 
-int emptyProcQ (pcb_PTR tp){
+int emptyProcQ (pcb_t* tp){
     return (tp == NULL);
 }
 
