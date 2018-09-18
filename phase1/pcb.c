@@ -133,9 +133,9 @@ int emptyChild (pcb_t* p){
 
 void insertChild (pcb_t* prnt, pcb_t *p){
     if (prnt != NULL){
-        p->psib = *(prnt->pchild);
-        p->pprnt = *prnt;
-        prnt->pchild = *p;
+        p->psib = prnt->pchild;
+        p->pprnt = prnt;
+        prnt->pchild = p;
     }
 }
 
