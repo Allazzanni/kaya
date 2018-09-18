@@ -65,36 +65,26 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
 }
 
 pcb_t* removeProcQ (pcb_t* *tp){
-    /*pcb_PTR ret;
-    if(emptyProcQ(*tp)) {
-        return NULL;
-    } else if ((*tp) -> pnext == (*tp)) {
-        ret = (*tp);
-        (*tp) = mkEmptyProcQ();
-        return ret;
-    }
-    ret  = (*tp) -> pnext;
-    (*tp) -> pnext -> pnext -> pprevious = (*tp);
-    (*tp) -> pnext = ((*tp) -> pnext -> pnext);
-    return ret;*/
-    if (emptyProcQ(tp)){
+  /*  if (emptyProcQ(tp)){
         return NULL;
     }
     return (outProcQ (tp, (*tp)->pnext));
-}
-    /*if (emptyProcQ(tp)){
+}*/
+    pcb_t* temp;
+    if (emptyProcQ(tp)){
         return (NULL);
     } else {
-        if (tp == tp->pnext){
-            pcb_PTR temp = tp->pnext;
-            tp.next = NULL;
+        if (*tp == (*tp)->pnext){
+            temp = *tp;
+            *tp = mkEmptyProcQ;
             return (temp);
         } else {
-            pcb_PTR temp = tp->pnext;
-            tp.next = tp->pnext->pnext;
+            temp = (*tp)->pnext;
+            (*tp)->pnext->pnext->pprevious = *tp;
+            (*tp)->pnext = (*tp)->pnext->pnext;
             return (temp);
         }
-    }*/
+    }
 
 pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
     
