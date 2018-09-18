@@ -65,11 +65,6 @@ void insertProcQ (pcb_t* *tp, pcb_t* p){
 }
 
 pcb_t* removeProcQ (pcb_t* *tp){
-  /*  if (emptyProcQ(tp)){
-        return NULL;
-    }
-    return (outProcQ (tp, (*tp)->pnext));
-}*/
     pcb_t* temp;
     if (emptyProcQ(*tp)){
         return (NULL);
