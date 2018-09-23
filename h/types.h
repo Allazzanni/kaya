@@ -21,15 +21,15 @@ typedef struct pcb_t{
     *pchild, /*pointer to 1st child*/
     *psib,
     *pprevious; /*pointer to sibling*/
-    int* psemAdd; /*pointer to sema4 on*/
+    int* psemadd; /*pointer to sema4 on*/
      /*which process blocked*/
     /*plus other entries to be added later*/
   }pcb_t, *pcb_PTR;
 
 typedef struct semd_t {
-    struct semd_t *sNext;
-    int *sSemAdd;
-    pcb_t *sProcQ
+    struct semd_t *snext;
+    int *ssemd;
+    pcb_t *sprocq
 }semd_t;
 
 typedef struct {
