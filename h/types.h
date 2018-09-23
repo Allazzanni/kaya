@@ -29,7 +29,7 @@ typedef struct pcb_t{
 typedef struct semd_t {
     struct semd_t *snext;
     int *ssemd;
-    pcb_t *sprocq
+    pcb_t *sprocq;
 }semd_t;
 
 typedef struct {
