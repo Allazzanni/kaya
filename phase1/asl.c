@@ -34,14 +34,11 @@ void freeSemd (semd_t* free){
 
 /* returns the semd before the target semAdd in the list, or if it is not there, the one before where it would go */
 semd_t* getTarget(int *semAdd){
-    debugA (*semAdd);
     /* sets target to the 0 dummy node */
     semd_t* target = semd_h;
-    debugA(*(target->ssemd));
     /* start by checking the node after the dummy node and every node after to find the one before our semAdd */
-    while (*(target->snext->ssemd) < *semAdd){
+    while (target->snext->ssemd < semAdd){
         target = target->snext;
-        debugA(*(target->ssemd));
     }
     return target;
 }
