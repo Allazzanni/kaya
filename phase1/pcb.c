@@ -30,7 +30,7 @@ pcb_t* allocPcb (){
     temp->pprnt = NULL;
     temp->pchild = NULL;
     temp->psib = NULL;
-    temp->psemAdd = NULL;
+    temp->psemadd = NULL;
     
     return (temp);
 
