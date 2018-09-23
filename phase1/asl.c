@@ -67,7 +67,7 @@ int insertBlocked (int *semAdd, pcb_t* p){
     }
 }
 
-semd_t* removeBlocked (int *semAdd){
+pcb_t* removeBlocked (int *semAdd){
     semd_t* target = getTarget(semAdd);
     if (target->snext->ssemd == semAdd){
         pcb_t* temp = removeProcQ(&(target->snext->sprocq));
@@ -102,7 +102,7 @@ pcb_t* outBlocked (pcb_t* p){
 }
 
 pcb_t* headBlocked (int* semAdd){
-    semd_t* target = getTarget(*semAdd);
+    semd_t* target = getTarget(semAdd);
     if (target->snext->ssemd == semAdd){
         target = target->snext;
         /* I am unsure if this is needed since there is no way for a semd
@@ -129,7 +129,7 @@ void initASL (){
     semd_h = &(semdTable[MAXPROC + 1]);
     semd_h->snext = &(semdTable[MAXPROC + 2]);
     semd_h->ssemd = 0;
-    semd_h->snext->ssemd = 2147483647;
+    semd_h->snext->ssemd = (int*) 2147483647;
     semd_h->snext->snext = NULL;
     semd_h->sprocq = NULL;
     semd_h->snext->sprocq = NULL;
