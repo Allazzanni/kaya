@@ -8,25 +8,6 @@
 HIDDEN semd_t* semd_h;
 HIDDEN semd_t* semdFree_h;
 
-/* inits with two dummy nodes on semd_h, one set to max int to mark the end and the other set to 0 to mark the start */
-void initASL (){
-    static semd_t semdTable[MAXPROC + 2];
-    int i;
-    semdFree_h = NULL;
-    semd_h = NULL;
-    for (i=0; i<MAXPROC; i++){
-        freeSemd (&(semdTable[i]));
-    }
-    semd_h = &(semdTable[MAXPROC + 1]);
-    semd_h->snext = &(semdTable[MAXPROC + 2]);
-    semd_h->ssemd = 0;
-    semd_h->snext->ssmed = 2147483647;
-    semd_h->snext->snext = NULL;
-    semd_h->sprocq = NULL;
-    semd_h->snext->sprocq = NULL;
-    
-}
-
 semd_t* allocSemd (){
     if (semdFree_h == NULL){
         return NULL;
@@ -136,4 +117,21 @@ pcb_t* headBlocked (int* semAdd){
     }
 }
 
-
+/* inits with two dummy nodes on semd_h, one set to max int to mark the end and the other set to 0 to mark the start */
+void initASL (){
+    static semd_t semdTable[MAXPROC + 2];
+    int i;
+    semdFree_h = NULL;
+    semd_h = NULL;
+    for (i=0; i<MAXPROC; i++){
+        freeSemd (&(semdTable[i]));
+    }
+    semd_h = &(semdTable[MAXPROC + 1]);
+    semd_h->snext = &(semdTable[MAXPROC + 2]);
+    semd_h->ssemd = 0;
+    semd_h->snext->ssemd = 2147483647;
+    semd_h->snext->snext = NULL;
+    semd_h->sprocq = NULL;
+    semd_h->snext->sprocq = NULL;
+    
+}
