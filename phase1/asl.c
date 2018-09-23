@@ -127,11 +127,23 @@ void initASL (){
         freeSemd (&(semdTable[i]));
     }
     semd_h = &(semdTable[MAXPROC + 1]);
+    semd_h -> snext = NULL;
+    /* last node in active list */
+    semd_h -> ssemd = (int*)MAX_INT;
+    semd_h -> sprocq = NULL;
+    
+    (semdTable[MAXPROC]).snext = semd_h;
+    semd_h = &(semArr[MAXPROC]);
+    semd_h -> ssemd = 0; /* frist node in active list */
+    semd_h -> sprocq = NULL;
+    /*
+    semd_h = &(semdTable[MAXPROC + 1]);
     semd_h->snext = &(semdTable[MAXPROC + 2]);
     semd_h->ssemd = 0;
     semd_h->snext->ssemd = (int*) 2147483647;
     semd_h->snext->snext = NULL;
     semd_h->sprocq = NULL;
     semd_h->snext->sprocq = NULL;
+     */
     
 }
