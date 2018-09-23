@@ -43,8 +43,8 @@ semd_t* getTarget(int *semAdd){
 int insertBlocked (int *semAdd, pcb_t* p){
     semd_t* target = getTarget(semAdd);
     /* determines if the target semd is already there or if we need to add it */
-    if (*(target->snext->ssemd) == semAdd){
-        target = target-snext;
+    if (*(target->snext->ssemd) == *semAdd){
+        target = target->snext;
         pcb_t* *tp = &(target->sprocq);
         insertProcQ (tp, p);
         p->psemadd = semAdd;
@@ -85,7 +85,7 @@ semd_t* removeBlocked (int *semAdd){
 
 pcb_t* outBlocked (pcb_t* p){
     semd_t* target = getTarget (p->psemadd);
-    if (target->snext->ssmed == p->psemadd){
+    if (target->snext->ssemd == p->psemadd){
         pcb_t* temp = outProcQ(&(target->snext->sprocq), p);
         if (temp == NULL){
             return NULL;
@@ -105,7 +105,7 @@ pcb_t* outBlocked (pcb_t* p){
 pcb_t* headBlocked (int* semAdd){
     semd_t* target = getTarget(*semAdd);
     if (target->snext->ssemd == semAdd){
-        target = target->next;
+        target = target->snext;
         /* I am unsure if this is needed since there is no way for a semd
          to not have a procq, but it was required in the specs so I wrote it anyway */
         if (emptyProcQ(target->sprocq)){
@@ -127,10 +127,10 @@ void initASL (){
     for (i=0; i<MAXPROC; i++){
         freeSemd (&(semdTable[i]));
     }
-    semd_h = &(semdtable[MAXPROC + 1]);
+    semd_h = &(semdTable[MAXPROC + 1]);
     semd_h->snext = &(semdTable[MAXPROC + 2]);
     semd_h->ssemd = 0;
-    semd_h->snext->ssmed = (int*) MAX_INT;
+    semd_h->snext->ssmed = 2147483647;
     semd_h->snext->snext = NULL;
     semd_h->sprocq = NULL;
     semd_h->snext->sprocq = NULL;
