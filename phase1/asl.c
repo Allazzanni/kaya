@@ -41,7 +41,7 @@ semd_t* getTarget(int *semAdd){
 }
 
 int insertBlocked (int *semAdd, pcb_t* p){
-    pcb_t* target = *(getTarget(semAdd));
+    semd_t* target = getTarget(semAdd);
     /* determines if the target semd is already there or if we need to add it */
     if (*(target->snext->ssemd) == semAdd){
         target = target-snext;
