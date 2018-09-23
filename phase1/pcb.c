@@ -90,7 +90,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
         if ((*tp)->pnext == *tp){
             if (*tp == p){
                 pcb_t* temp = *tp;
-                tp = mkEmptyProcQ();
+                *tp = mkEmptyProcQ();
                 return (temp);
             } else {
                 return (NULL);
