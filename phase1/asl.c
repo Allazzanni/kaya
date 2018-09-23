@@ -33,7 +33,7 @@ semd_t* getTarget(int *semAdd){
     /* sets target to the 0 dummy node */
     semd_t* target = semd_h;
     /* start by checking the node after the dummy node and every node after to find the one before our semAdd */
-    while (*(target->snext->ssemd) > *semAdd){
+    while (*(target->snext->ssemd) < *semAdd){
         target = target->snext;
     }
     return target;
