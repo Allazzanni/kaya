@@ -7,13 +7,13 @@
 
 HIDDEN semd_t* semd_h;
 HIDDEN semd_t* semdFree_h;
-
+HIDDEN semd_t* temp;
 
 semd_t* allocSemd (){
     if (semdFree_h == NULL){
         return NULL;
     }
-    semd_t temp = semdFree_h;
+    temp = semdFree_h;
     semdFree_h = semdFree_h->snext;
     
     /* cleaning the dishes */
