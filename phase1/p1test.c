@@ -249,7 +249,6 @@ void main() {
 
     
 	/* check ASL */
-    addokbuf("here");
 	initASL();
 	addokbuf("Initialized active semaphore list   \n");
 
