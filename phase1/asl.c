@@ -8,10 +8,6 @@
 HIDDEN semd_t* semd_h;
 HIDDEN semd_t* semdFree_h;
 
-void debugA (int a){
-    int i = 0;
-}
-
 semd_t* allocSemd (){
     if (semdFree_h == NULL){
         return NULL;
@@ -46,26 +42,25 @@ semd_t* getTarget(int *semAdd){
 int insertBlocked (int *semAdd, pcb_t* p){
     semd_t* target = getTarget(semAdd);
     /* determines if the target semd is already there or if we need to add it */
-    if (*(target->snext->ssemd) == *semAdd){
+    if (target->snext->ssemd == semAdd){
         target = target->snext;
-        pcb_t* *tp = &(target->sprocq);
-        insertProcQ (tp, p);
         p->psemadd = semAdd;
+        insertProcQ (&(target->sprocq), p);
         return (FALSE);
     } else {
-        if (semdFree_h == NULL){
-            return TRUE;
-        }
         /* create the new semd_t and put it on the ASL where it should be
          aka the position after our current target */
         semd_t* newTarget = allocSemd();
+        if (newTarget == NULL){
+            return TRUE;
+        }
         newTarget->snext = target->snext;
         target->snext = newTarget;
         newTarget->sprocq = mkEmptyProcQ();
         
         /* now we put the value in its pcbq */
-        pcb_t* *tp = &(newTarget->sprocq);
-        insertProcQ (tp, p);
+        insertProcQ (&(newTarget->sprocq), p);
+        newTarget->ssemd = semAdd;
         p->psemadd = semAdd;
         return FALSE;
     }
