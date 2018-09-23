@@ -18,21 +18,21 @@ void freePcb (pcb_t* p){
 
 /* takes it off the free list*/
 pcb_t* allocPcb (){
+    /* might change to emptyProcQ in the if statement */
     if (pcbList_h == NULL){
         return (NULL);
     }
-    pcb_t *allocPcbTemp = pcbList_h;
+    pcb_t *temp = pcbList_h;
     pcbList_h = pcbList_h->pnext;
-    /*pcb_t* allocPcbTemp = removeProcQ(&(pcbList_h));*/
 
     
-    allocPcbTemp->pnext = NULL;
-    allocPcbTemp->pprnt = NULL;
-    allocPcbTemp->pchild = NULL;
-    allocPcbTemp->psib = NULL;
-    allocPcbTemp->psemAdd = NULL;
+    temp->pnext = NULL;
+    temp->pprnt = NULL;
+    temp->pchild = NULL;
+    temp->psib = NULL;
+    temp->psemAdd = NULL;
     
-    return (allocPcbTemp);
+    return (temp);
 
 }
 
