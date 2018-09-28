@@ -42,6 +42,7 @@ void freeSemd (semd_t* free){
     semdFree_h = free;
 }
 
+/* wrote this to iterate through the semd_h list since it was essentially the same thing for several locations */
 /* returns the semd before the target semAdd in the list, or if it is not there, the one before where it would go */
 semd_t* getTarget(int *semAdd){
     /* sets target to the 0 dummy node */
@@ -68,6 +69,7 @@ int insertBlocked (int *semAdd, pcb_t* p){
     } else {
         /* we dont have the desired semaphore so we must create the new semd_t and put it on the ASL where it should be aka the position after our current target */
         semd_t* newTarget = allocSemd();
+        /* if this fails then we are out of semaphores and therefore out of luck */
         if (newTarget == NULL){
             return TRUE;
         }
@@ -75,7 +77,7 @@ int insertBlocked (int *semAdd, pcb_t* p){
         target->snext = newTarget;
         newTarget->sprocq = mkEmptyProcQ();
         
-        /* now we put the value in its pcbq */
+        /* now we put the value in its pcbQ */
         insertProcQ (&(newTarget->sprocq), p);
         newTarget->ssemd = semAdd;
          /* this seems minor, but i spent a lot of time bug testing this so i made a note here to make sure anyone touching this code remembers to that the pcbs have an address too, and they need it, and I wil be copying it wherever this is done */
@@ -100,7 +102,7 @@ pcb_t* removeBlocked (int *semAdd){
         }
         return temp;
     } else {
-        /* the address must have a value for us to remove said value */
+        /* the address must have a correlating semaphore for us to remove said value */
         return NULL;
     }
 }
@@ -108,13 +110,13 @@ pcb_t* removeBlocked (int *semAdd){
 /* Remove the ProcBlk pointed to by p from the process queue associated with p’s semaphore (p→psemAdd) on the ASL. If ProcBlk pointed to by p does not appear in the process queue associated with p’s semaphore, which is an error condition, return NULL; otherwise, return p. */
 pcb_t* outBlocked (pcb_t* p){
     semd_t* target = getTarget (p->psemadd);
-    /* if this fails then you really screwed up */
+    /* idiot proofing */
     if (target->snext->ssemd == p->psemadd){
         /* removes our desired pcb from the list it should be on */
         pcb_t* temp = outProcQ(&(target->snext->sprocq), p);
-        /* if this fails then you created a pcb with an address that correlates to an active sempahore, then didnt put that pcb in that semamphore... just why */
+        /* if this fails then you created a pcb with an address that correlates to an active sempahore, then didnt put that pcb in that semamphore... why? */
         if (temp == NULL){
-            /* this is why we can't have nice things */
+            /* You had to do something manually to get here so its either a good test case or a really bad implementation */
             return NULL;
         } else {
             /* anytime we remove a pcb from a semaphore we have to ensure that the semaphore still has a pcb, if not we remove it from the active semaphores list */
@@ -126,7 +128,7 @@ pcb_t* outBlocked (pcb_t* p){
             return temp;
         }
     } else {
-        /* what did you do, assign a psemadd without putting in a semaphore and then check if it was in the semaphores, why would you do that you masochist */
+        /* what did you do, assign a psemadd without putting said p in a semaphore and then check if it was in the semaphores, why would you do that you masochist */
         return NULL;
     }
 }
@@ -137,7 +139,7 @@ pcb_t* headBlocked (int* semAdd){
     /* checks if the requested semAdd is even active */
     if (target->snext->ssemd == semAdd){
         target = target->snext;
-        /* if this fails it is your fault as it is literally impossible with the methods I wrote. If your wondering the fail means you have a semaphore with an empty proc q, I would fix that */
+        /* if this fails it means you have an active semaphore with an empty proc q or you ran headBlocked on a dummy node. dont do that. */
         if (emptyProcQ(target->sprocq)){
             /* I should remove the sempahore if it was up to me, but the specs said to return NULL, so thats what I did. This should never happen anyway */
             return NULL;
@@ -146,7 +148,7 @@ pcb_t* headBlocked (int* semAdd){
             return headProcQ (target->sprocq);
         }
     } else {
-        /* congrats, your test case found the fringe situation */
+        /* if you are here you are a test case or you have tried to headBlocked an address with no correlating semaphore */
         return NULL;
     }
 }

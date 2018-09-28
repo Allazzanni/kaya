@@ -92,6 +92,7 @@ pcb_t* removeProcQ (pcb_t* *tp){
     pcb_t* temp;
     /* start by checking if queue is empty */
     if (emptyProcQ(*tp)){
+        /* cant remove from an empty list */
         return (NULL);
     } else {
         /* then we check if the list has only one value since we know it has at least one */
@@ -112,9 +113,9 @@ pcb_t* removeProcQ (pcb_t* *tp){
 
 /* Remove the ProcBlk pointed to by p from the process queue whose tail-pointer is pointed to by tp. Update the process queue’s tail-pointer if necessary. If the desired entry is not in the indicated queue(an error condition), return NULL; otherwise, return p. Note that p can point to any element of the process queue. */
 pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
-    /* start by confirming that someone did not screw up */
+    /* idiot proofing */
     if (emptyProcQ(*tp) || p == NULL){
-        /* if you are here you did not read the method description or are just really bad at pointers */
+        /* you gave me a NULL value. Either p or tp, dont care which neither can be NULL */
         return (NULL);
     } else {
         /* we start by checking if the list has only one value */
@@ -125,6 +126,7 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
                 *tp = mkEmptyProcQ();
                 return (temp);
             } else {
+                /* if you are here then you asked me to remove a value from a list with only one value in it and that value was not the value you asked me to remove */
                 return (NULL);
             }
         } else {
@@ -140,12 +142,13 @@ pcb_t* outProcQ (pcb_t* *tp, pcb_t* p){
                 }
                 target = target->pnext;
             }
-            /* this is here because the way the loop was written it would end on tp so we had to do one last check in case you asked me to remove tp. */
+            /* this is here because the way the loop was written it would end on tp if no other values match p, so we had to do one last check in case you asked me to remove tp. */
             if (target == p){
                 p->pnext->pprevious = p->pprevious;
                 p->pprevious->pnext = p->pnext;
                 return (target);
             }
+            /* I can only outProc values that are in the list */
             return (NULL);
         }
     }
@@ -182,6 +185,7 @@ void insertChild (pcb_t* prnt, pcb_t *p){
 pcb_t* removeChild(pcb_t* p){
     /* check if it has a kid */
     if (emptyChild(p)){
+        /* cant take a child unless they have one */
         return (NULL);
     } else {
         /* if so we draft the kid for the army... aka we remove it and return it */
