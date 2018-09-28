@@ -75,8 +75,10 @@ typedef struct state_t {
 } state_t, *state_PTR;
 
 #define	s_at	s_reg[0]
+/* returns information to the calling process */
 #define	s_v0	s_reg[1]
 #define s_v1	s_reg[2]
+/* a registers, relevant for syscalls */
 #define s_a0	s_reg[3]
 #define s_a1	s_reg[4]
 #define s_a2	s_reg[5]
@@ -100,7 +102,7 @@ typedef struct state_t {
 #define s_t8	s_reg[23]
 #define s_t9	s_reg[24]
 #define s_gp	s_reg[25]
-#define s_sp	s_reg[26]
+#define s_sp	s_reg[26] /* stag pointer */
 #define s_fp	s_reg[27]
 #define s_ra	s_reg[28]
 #define s_HI	s_reg[29]
