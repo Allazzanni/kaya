@@ -34,7 +34,12 @@ int semdTable[MAXSEMALLOC];
 * which will delegate the rest of the OS, i.e. main will return 1
 */
 int main() {
- 
+    /* initalize global variables */
+    readyQueue = mkEmptyProcQ();
+    currentProcess = NULL;
+    processCount = 0;
+    softBlockedCount = 0;
+
     /* the device register */
     devregarea_PTR bus = (devregarea_PTR) RAMBASEADDR;
     /* set the top of the RAM to be the base plus the amount 
@@ -51,6 +56,7 @@ int main() {
     and the t9 register is filled in each respective location */
     /******************************************** SYSCALL AREA ****************************************/
     state = (state_PTR) SYSCALLNEWAREA;
+    STST(state);
     state->s_status = ALLOFF;   
     state->s_sp = RAMTOP;
     state->s_pc = (memaddr) NULL; /* TODO: build syscall handler */
@@ -58,6 +64,7 @@ int main() {
     state->s_t9 = NULL; /* TODO: build syscall handler */
     /******************************************** PRGMTRAP AREA ****************************************/
     state = (state_PTR) PRGMTRAPNEWAREA;
+    STST(state);
     state->s_status = ALLOFF;   
     state->s_sp = RAMTOP;
     state->s_pc = (memaddr) NULL; /* TODO: build program trap handler */
@@ -65,6 +72,8 @@ int main() {
     state->s_t9 = NULL; /* TODO: build program trap handler */
     /******************************************** TBLMGMT AREA ****************************************/
     state = (state_PTR) TBLMGMTNEWAREA;
+    /* privlaged ROM instruction */
+    STST(state);
     state->s_status = ALLOFF;   
     state->s_sp = RAMTOP;
     state->s_pc = (memaddr) NULL; /* TODO: build table management handler */
@@ -72,6 +81,7 @@ int main() {
     state->s_t9 = NULL; /* TODO: build table management handler */
     /******************************************** INTRUPT AREA ****************************************/
     state = (state_PTR) INTRUPTNEWAREA;
+    STST(state);
     state->s_status = ALLOFF;   
     state->s_sp = RAMTOP;
     state->s_pc = (memaddr) NULL; /* TODO: build interrupt handler */
@@ -85,8 +95,25 @@ int main() {
         /* intialize every semaphore to have a starting address of 0 */
         semdTable[i] = 0;
     }
-    
+
+    /* now, we start up the underlying data structures to support the rest of the 
+    operating system - being the process control blocks and the semaphore list */ 
     initPcbs();
     initASL();
+    /* allocated a process - just like before, we must now allocate memory according`ly */
+    currentProcess = allocPcb();
+    currentProcess->p_state.s_sp = (RAMTOP - PAGESIZE);
+    currentProcess->p_state.s_pc = (memaddr) NULL; /* TODO IMPLEMENT TEST CODE */
+    currentProcess->p_state.s_t9 = (memaddr) NULL; /* TODO IMPLEMENT TEST CODE */
+    /* increment the process count, since we have one fired up */
+    processCount++;
+    /* insert the newly allocated process into the ready queue */
+    insertProcQ(&(readyQueue), currentProcess);
+    /* TODO CALL THE SCHEDULER */
+
+    /* ttfn */
+    return 0;
 }
+
+
 
