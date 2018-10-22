@@ -8,7 +8,7 @@
  */
 int processCount, softBlockCount;
 pcb_t* currentProcess, readyQue;
-
+int semaphores[SEMCOUNT];
 
 /*where the booting happens */
 main (){
@@ -21,31 +21,31 @@ main (){
      */
     unsigned int topOfPM;
     state_t* stateSetter;
-    devregarea_t* pmInfo = (devregarea_t*) RAMBASEADDR;
+    devregarea_t* pmInfo = (devregarea_t*) 0x10000000;
     
     topOfPM = (pmInfo->rambase) + (pmInfo->ramsize);
     
     /* syscallHandler */
     stateSetter = (state_t*) 0x200003D4;
-    stateSetter->s_status = ALLOFF;
+    stateSetter->s_status = ;
     stateSetter->s_sp = topOfPM;
     stateSetter->s_pc = stateSetter->s_t9 = (memaddr) syscallHandler;
     
     /* pgmTrap */
     stateSetter = (state_t*) 0x200002BC;
-    stateSetter->s_status = ALLOFF;
+    stateSetter->s_status = ;
     stateSetter->s_sp = topOfPM;
     stateSetter->s_pc = stateSetter->s_t9 = (memaddr) pgmTrap;
     
     /* tlbManager */
     stateSetter = (state_t*) 0x200001A4;
-    stateSetter->s_status = ALLOFF;
+    stateSetter->s_status = ;
     stateSetter->s_sp = topOfPM;
     stateSetter->s_pc = stateSetter->s_t9 = (memaddr) tlbManager;
     
     /* interuptHandler */
     stateSetter = (state_t*) 0x2000008C;
-    stateSetter->s_status = ALLOFF;
+    stateSetter->s_status = ;
     stateSetter->s_sp = topOfPM;
     stateSetter->s_pc = stateSetter->s_t9 = (memaddr) interuptHandler;
     
@@ -72,6 +72,12 @@ main (){
     currentProcess->p_state.s_sp = (topOfPM - PAGESIZE);
     currentProcess->p_state.s_pc = currentProcess->p_state.s_t9 = (memaddr) test;
     currentProcess->p_state.s_status = ;
+    
+    int i = 0;
+    while (i < SEMCOUNT){
+        semaphores[i] = 0;
+        i++;
+    }
     
     processCount++;
     insertProcQ(&readyQue, currentProcess);

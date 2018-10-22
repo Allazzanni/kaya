@@ -25,7 +25,7 @@ void scheduler () {
     } else {
         currentProcess = removeProcQ(readyQue);
         /* lead a timer with the value of a quantum */
-        
+        setTIMER(5000);
         LDST(&(currentProcess->p_state));
     }
 }

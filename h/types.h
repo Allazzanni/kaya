@@ -24,6 +24,7 @@ typedef struct pcb_t{
     int* psemadd; /*pointer to sema4 on*/
      /*which process blocked*/
     /*plus other entries to be added later*/
+    state_t* p_state;
   }pcb_t, *pcb_PTR;
 
 typedef struct semd_t {
@@ -65,6 +66,8 @@ typedef struct {
 } devregarea_t;
 
 #define STATEREGNUM	31
+
+
 typedef struct state_t {
 	unsigned int	s_asid;
 	unsigned int	s_cause;
