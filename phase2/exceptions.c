@@ -2,6 +2,7 @@
 #include "../h/types.h"
 
  void syscallHandler() {
+     
     int callNumber = 0; /* TODO: properly assign the number and handle case  */
     switch(callNumber) {
     case WAITFORIODEVICE:
@@ -22,6 +23,7 @@
         return NULL;
     }
  }
+
 
  void programTrapHandler() {
 
