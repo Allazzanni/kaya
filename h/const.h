@@ -35,11 +35,6 @@
 #define INTRUPTNEWAREA 0x2000008C
 #define INTRUPTOLDAREA 0x20000000
 
-/* timer, timescale, TOD-LO and other bus regs */
-#define RAMBASEADDR	0x10000000
-#define TODLOADDR	0x1000001C
-#define INTERVALTMR	0x10000020
-#define TIMESCALEADDR	0x10000024
 /* utility constants */
 #define	TRUE		1
 #define	FALSE		0
