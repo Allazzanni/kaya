@@ -1,124 +1,135 @@
-#include "../h/const.h"
-#include "../h/types.h"
-/* e files to include */
-#include "../e/initial.e"
-#include "../e/scheduler.e"
-#include "../e/pcb.e"
-#include "../e/asl.e"
 
 
-static void waitForDevice() {
+extern int processCount, softBlockCount;
+extern pcb_t* currentProcess, readyQue;
+extern int semaphores[SEMCOUNT];
 
-}
 
-static void waitForClock() {
-
-}
-
-static void getCpuTime() {
-
-}
-
-static void specifyExceptionsStateVector() {
-
-}
-
-/* Function: Syscall 4 - Passeren
-* When this service is requested, it is interpreted by the nucleus as a request to 
-* perform a V operation on a semaphore.
-* The V or SYS3 service is requested by the calling process by 
-* placing the value 3 in a0, the physical address of the semaphore 
-* to be V’ed in a1, and then executing a SYSCALL instruction.
-*/
-static void passeren(state_PTR state) {
-    /* place the value of the physical address of the
-    semaphore to be passerened into register a1 */
-    int* semaphore = (int*) state->s_a1;
-    /* decrement the semaphore */
-    (*(semaphore))--;
-
-    if(*(semaphore) < 0) {
-        insertBlocked(semaphore, currentProcess);
-        invokeScheduler();
-    }
-    LDST(state);
-}
-
-/* Function: Syscall 3 - Verhogen 
-* When this service is requested, it is interpreted by the nucleus as 
-* a request to perform a V operation on a semaphore.
-* The V or SYS3 service is requested by the calling process by 
-* placing the value 3 in a0, the physical address of the semaphore to be V’ed in a1, 
-* and then executing a SYSCALL instruction.
-*/
-static void verhogen(state_PTR state) {
-    int* semaphore = (int*) state->s_a1;
-    (*(semaphore))++;
-    if(*(semaphore) <= 0) {
-        pcb_PTR newProcess = NULL;
-        newProcess = removeBlocked(semaphore);
-        if(newProcess != NULL) {
-            insertProcQ(&(readyQueue), newProcess);
-        }
-    }
+syscallHandler (){
+    state_t* oldState = (state_t*) 0x20000348
+    /* this is a bit unnecasary but it is much easier to read if we do it */
+    unsigned int status = oldState->s_status;
+    unsigned int a0 = oldState->s_a0;
     
-
-}
-
-static void terminateProcess() {
-
-}
-
-static void createProcess() {
-
-}
-
-
- void syscallHandler() {
-    pcb_PTR process;
-    int* semaphoreAddress;
-    int* semaphoreDevice;
-    int userMode = FALSE;
-    state_PTR syscallOldArea;
-    state_PTR programTrapOldArea;
-
-    if(!userMode) {
-        int callNumber = 0; /* TODO: properly assign the number and handle case  */
-        switch(callNumber) {
-            case WAITFORIODEVICE:
-                waitForClock();
-            case WAITFORCLOCK:
-                waitForClock();
-            case GETCPUTIME:
-                getCpuTime();
-            case SPECIFYEXCEPTIONSTATEVECTOR:
-                specifyExceptionsStateVector();
-            case PASSEREN:
-                passeren();
-            case VERHOGEN:
-                verhogen();
-            case TERMINATEPROCESS:
-                terminateProcess();   
-            case CREATEPROCESS:
-                createProcess();
-        }
-    } else {
+    if (a0 >= 9 && a0 < 255){
         passUpOrDie();
+    } else {
+        if (/*status is in kernal mode */){
+            oldState->s_pc = oldState->s_pc + 4;
+            switch (a0) {
+                case 1:
+                    sys1(oldState);
+                break;
+                case 2:
+                    sys2();
+                break;
+                case 3:
+                    sys3(oldState);
+                break;
+                case 4:
+                    sys4(oldState);
+                break;
+                case 5:
+                    sys5(oldState);
+                break;
+                case 6:
+                    sys6(oldState);
+                break;
+                case 7:
+                    sys7(oldState);
+                break;
+                case 8:
+                    sys8(oldState);
+                break;
+                default:
+                    /*pass up or die*/
+                break;
+            }
+        } else {
+            /*priviledged instruction pgmtrap */
+            state_t* pgTrap_s = (state_t*) 0x20000230
+            copyState(oldState, pgTrap_s);
+            pgTrap_s->s_cause = (unsigned int) 10;
+            pgmTrap();
+        }
     }
+}
 
- }
+void sys1 (state_t* callerID){
+    p = allocPCB ();
+    if (p == NULL){
+        callerID->s_v0 = -1;
+    } else {
+        ++processCount;
+        
+        insertChild(currentProcess, p);
+        
+        copyState ((state_t *) callerID->s_a1, &(p->p_state));
+        
+        callerID->v0 = 0;
+    }
+    LDST (callerID);
+}
 
- void programTrapHandler() {
-     /* TODO program handler */
- }
+void sys2 () {
+    genocide (currentProcess);
+    currentProcess = NULL;
+    scheduler ();
+}
 
- void tableHandler() {
-     /* TODO table handler */  
+void genocide (pcb_t* deadMan){
+    if (currentProcess == deadMan){
+        outChild(deadMan)
+    } else {
+        if (*(deadMan->psemadd) == 0){
+            outProcQ(readyQue, deadMan);
+        } else {
+            outBlocked (deadMan);
+            if (*(deadMan->psemadd) < SEMCOUNT){
+                --softBlockCount;
+            } else {
+                --(*(deadMan->psemadd));
+            }
+        }
+    }
+    if (!emptyChild(deadMan)){
+        genocide (deadMan->pchild);
+    }
+    if (deadMan->psib != NULL && deadMan != currentProcess){
+        genocide (deadMan->psib);
+    }
+    freePCB (deadMan);
+    --processCount;
+}
 
- }
+void sys3 (state_t* oldState){
+    pcb_t* new = NULL;
+    int* semAdd = oldState->s_a1;
+    (*semAdd)++;
+    if ((*semAdd) <= 0){
+        new = removeBlocked(semAdd);
+        new ->pcb_semAdd = NULL;
+        insertProcQ(&(readyQueue), new);
+    }
+}
 
- static void passUpOrDie() {
-    
- }
+void sys4 (state_t* oldState){
+    int* semAdd = oldState->s_a1;
+    (*semAdd)--;
+    if ((*semAdd) < 0){
+        STCK(TODStopped);
+        current = TODStopped - TODStarted;
+        currentProcess->pcb_time = currentProcess->pcb_time + current;
+        copyState(old, &(currentProcess->pcb_s));
+        insertBlocked(semAdd, currentProcess);
+        currentProcess = NULL;
+        scheduler();
+    }
+}
 
- 
+void sys6 (state_t* doesNotOwnAWatch){
+    int timeRemaining = 5000 - getTIMER();
+    int clock = ;
+    return clock + timeRemaining;
+}
+
