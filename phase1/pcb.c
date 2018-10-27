@@ -40,7 +40,10 @@ pcb_t* allocPcb (){
     temp->pchild = NULL;
     temp->psib = NULL;
     temp->psemadd = NULL;
-    
+    temp->p_state = NULL;
+    temp->p_time = NULL;
+    temp->oldSys = temp->newSys = temp->oldPgm = NULL;
+    temp->newPgm = temp->oldTLB = temp->newTLB = NULL;
     return (temp);
 
 }

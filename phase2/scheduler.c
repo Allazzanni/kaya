@@ -7,11 +7,18 @@
 #include "../e/pcb.e"
 #include "/usr/local/include/umps2/umps/libumps.e"
 
+cpu_t startTOD;
+
 extern int processCount, softBlockCount;
 extern pcb_t* currentProcess, readyQue;
 extern int semaphores[SEMCOUNT];
 
 void scheduler () {
+    
+    if (currentProcess != NULL){
+        STCK(startTOD);
+    }
+    
     if (emptyProcQ(readyQue)){
         if (processCount == 0){
             HALT();

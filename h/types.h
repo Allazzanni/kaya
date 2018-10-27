@@ -24,7 +24,8 @@ typedef struct pcb_t{
     int* psemadd; /*pointer to sema4 on*/
      /*which process blocked*/
     /*plus other entries to be added later*/
-    state_t* p_state;
+    state_t* p_state, oldSys, newSys, oldPgm, newPgm, oldTLB, newTLB;
+    cpu_t* p_time;
   }pcb_t, *pcb_PTR;
 
 typedef struct semd_t {

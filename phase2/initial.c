@@ -79,6 +79,8 @@ main (){
         i++;
     }
     
+    LDIT(100000);
+    
     processCount++;
     insertProcQ(&readyQue, currentProcess);
     scheduler();
