@@ -7,7 +7,9 @@ extern void copyState (state_t* source, state_t* destination);
 extern int findWaldo (int line, int device, int read)
 
 void interuptHandler () {
-    int line;
+    int line, read, status;
+    
+    
     state_t* ourState = (state_t*) INTERUPTOLDAREA;
     unsigned int problemChild = *(outState->s_cause);
     problemChild = (problemChild & IPAREA) >> 8;
@@ -31,8 +33,8 @@ void interuptHandler () {
     } else {
         PANIC ();
     }
+    line = line - DEVNOSEM;
     
-    /* im tired so ill just say see the video part a and comment later */
     devregarea_t* theThing;
     theThing = (devregarea_t*) RAMBASEADDR;
     unsigned int theOTherThing;
@@ -57,7 +59,55 @@ void interuptHandler () {
         number = 8;
     }
     
-    /* pick up tommorow (i am towards the end of part a video */
+    device_t* deviceRegister = (device_t*) (INTDEVREG + ((line - DEVNOSUM)*DEVREGSIZE*DEVPERINT) + (deviceNum*DEVREGSIZE));
+    
+    /* check if it is a terminal and adjust accordingly */
+    if ((line + 3) != TERMINT){
+        status = deviceRegister->d_status;
+        deviceRegister->d_command = ACK;
+    } else {
+        read = (deviceRegister->t_transm_status & 0xFF);
+        switch (read):
+        case 3:
+        case 4:
+        case 5:
+            index = (DEVPERINT *(line - DEVNOSEM)) + number;
+            status = deviceRegister->t_recv_status;
+            devReg->t_recv_command = ACK;
+        break;
+        default:
+            /*adjust index*/
+            status = deviceRegister->t_recv_status;
+            deviceRegister->t_recv_command = ACK;
+        break;
+    }
+    
+    device_t theActualDevice = theThing->devreg[index];
+    
+    
+    /* V operaton the semaphore */
+    /*increment the semaphore */
+    /* test if <= 0 */
+        /*p = removeBlocked*/
+        /* p->p_state.s_v0 = status of device out of device register */
+        /*insertProcQ(p, readyQue)*/
+        /*softBlockCount--;*/
+    /*ack the interupt */
+        /* setting the command field in the device register to ACK (1) */
+    /* return control to the process that was executing at the the time of the interupt */
+    /*LDST(oldState) */
+    /* if in waitstate then cal scheduler */
+    
+    
     
 }
+
+
+
+
+
+
+
+
+
 
