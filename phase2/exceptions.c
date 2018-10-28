@@ -2,7 +2,8 @@
 
 extern int processCount, softBlockCount;
 extern pcb_t* currentProcess, readyQue;
-extern int semaphores[SEMCOUNT];
+extern int semaphores[SEMCOUNT], psuedoClock;
+extern cpu_t
 
 HIDDEN void sys1(state_t* oldState);
 HIDDEN void sys2();
@@ -19,13 +20,31 @@ HIDDEN void theLordsJudgement(state_t* pagan, int plee);
 void copyState(state_t* source, state_t* destination);
 
 void tlbManager(){
-    state_t* oldState = (state_t*) TBLMGMTOLDAREA;
-    theLordsJudgement(oldState, TLBTRAP);
+    if (currentProc->oldTLB == NULL){
+        sys2();
+        currentProccess = NULL;
+        scheduler()
+    } else {
+        /* move the state ate PGMTRAPOLDAREA to the processes oldPgm */
+        copyState((state_t*) TBLMGMTNEWAREA, currentProccess->oldTLB);
+        /* make the newPgm state the currentProcesses state */
+        copyState(currentProc->newTLB, &(currentProccess->p_state));
+        LDST(&(currentProccess->p_state));
+    }
 }
 
 void pgmTrap(){
-    state_t* oldState = (state_t*) PGMTRAPOLDAREA;
-    theLordsJudgement(oldState, PROGTRAP);
+    if (currentProc->oldPgm == NULL){
+        sys2();
+        currentProccess = NULL;
+        scheduler()
+    } else {
+        /* move the state ate PGMTRAPOLDAREA to the processes oldPgm */
+        copyState((state_t*) PGMTRAPOLDAREA, currentProccess->oldPgm);
+        /* make the newPgm state the currentProcesses state */
+        copyState(currentProc->newPgm, &(currentProccess->p_state));
+        LDST(&(currentProccess->p_state));
+    }
 }
 
 syscallHandler (){
@@ -37,7 +56,7 @@ syscallHandler (){
     if (a0 >= 9 && a0 < 255){
         theLordsJudgement();
     } else {
-        if (/*status is in kernal mode */){
+        if ((status & KUON) == ALLOFF){
             oldState->s_pc = oldState->s_pc + 4;
             switch (a0) {
                 case 1:
@@ -70,29 +89,30 @@ syscallHandler (){
             }
         } else {
             /*priviledged instruction pgmtrap */
-            state_t* pgTrap_s = (state_t*) 0x20000230
-            copyState(oldState, pgTrap_s);
-            pgTrap_s->s_cause = (unsigned int) 10;
+            state_t* PGMTrap = (state_t*) 0x20000230
+            copyState(oldState, PGMTrap);
+            PGMTrap->s_cause = (unsigned int) 10;
             pgmTrap();
         }
     }
     PANIC();
 }
 
-HIDDEN void sys1 (state_t* callerID){
+HIDDEN void sys1 (state_t* oldState){
+    pcb_t* p;
     p = allocPCB ();
     if (p == NULL){
-        callerID->s_v0 = -1;
+        currentProcess->p_state.s_v0 = -1;
     } else {
-        ++processCount;
+        processCount++;
         
         insertChild(currentProcess, p);
+        insertProcQ(&readyQue, p);
+        copyState (oldState, &(p->p_state));
         
-        copyState ((state_t *) callerID->s_a1, &(p->p_state));
-        
-        callerID->v0 = 0;
+        currentProcess->p_state.v0 = 0;
     }
-    LDST (callerID);
+    LDST (&(currentProcess->p_state));
 }
 
 HIDDEN void sys2 () {
@@ -109,10 +129,10 @@ HIDDEN void genocide (pcb_t* deadMan){
             outProcQ(readyQue, deadMan);
         } else {
             outBlocked (deadMan);
-            if (*(deadMan->psemadd) < SEMCOUNT){
-                --softBlockCount;
+            if (*(deadMan->psemadd) < SEMCOUNT && *(deadMan->psemadd) > 2){
+                softBlockCount--;
             } else {
-                --(*(deadMan->psemadd));
+                (*(deadMan->psemadd)++);
             }
         }
     }
@@ -127,7 +147,7 @@ HIDDEN void genocide (pcb_t* deadMan){
 }
 
 HIDDEN void sys3 (state_t* oldState){
-    pcb_t* new = NULL;
+    pcb_t* new;
     int* semAdd = oldState->s_a1;
     (*semAdd)++;
     if ((*semAdd) <= 0){
@@ -154,11 +174,13 @@ HIDDEN void sys4 (state_t* oldState){
         scheduler();
          */
         /* my solution */
-        copyState(oldState, &(currentProcess->p_state));
+        /* put it on the semaphore */
         insertBlocked(semAdd, currentProcess);
+        currentProcess->psemadd = semAdd;
+        
         scheduler();
     }
-    LDST(oldState);
+    LDST(&(currentProcess->p_state));
 }
 
 HIDDEN void sys5 (state_t* oldState){
@@ -189,7 +211,6 @@ HIDDEN void sys5 (state_t* oldState){
 }
 
 HIDDEN void sys6 (state_t* doesNotOwnAWatch){
-    cpu_t stopTOD;
     STCK(stopTOD);
     cpu_t elapsedTime = stopTOD - startTOD;
     currentProcess->p_time = currentProcess->p_time + elapsedTime;
@@ -199,19 +220,21 @@ HIDDEN void sys6 (state_t* doesNotOwnAWatch){
 }
 
 HIDDEN void sys7 (state* oldState){
-    int* semAdd = (int*) &(semaphores[SEMCOUNT-1]);
-    (*semAdd)--;
-    insertBlocked(semAdd, currentProcess);
-    copyState(oldState, &(currentProcess->p_state));
-    softBlockCount++;
-    scheduler();
+    psuedoClock--;
+    if (psuedoClock < 0){
+        insertBlocked(semAdd, currentProcess);
+        copyState(oldState, &(currentProcess->p_state));
+        softBlockCount++;
+        scheduler();
+    }
+    LDST(&(currentProcess->p_state));
 }
 
 HIDDEN void sys8 (state* oldState){
     int waldo = findWaldo (oldState);
     int* semAdd = &(semaphores[waldo]);
     *semAdd--;
-    if (semAdd < 0){
+    if (*(semAdd) < 0){
         insertBlocked (semAdd, currentProcess);
         copyState(oldState, &(currentProcess->p_state));
         softBlockCount++;
@@ -219,6 +242,7 @@ HIDDEN void sys8 (state* oldState){
     } else {
         PANIC();
     }
+    LDST(&(currentProcess->p_state));
 }
 
 HIDDEN int findWaldo (state_t* oldState){

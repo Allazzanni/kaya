@@ -8,7 +8,7 @@
  */
 int processCount, softBlockCount;
 pcb_t* currentProcess, readyQue;
-int semaphores[SEMCOUNT];
+int semaphores[SEMCOUNT], psuedoClock;
 
 /*where the booting happens */
 main (){
@@ -58,6 +58,7 @@ main (){
     softBlockCount = 0;
     currentProcess = NULL;
     readyQue = mkEmptyProcQ();
+    psuedoClock = 0;
      /*
      p = allocatePCB ()
         initialize the p_s

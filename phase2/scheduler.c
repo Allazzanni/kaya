@@ -12,11 +12,13 @@ cpu_t startTOD;
 extern int processCount, softBlockCount;
 extern pcb_t* currentProcess, readyQue;
 extern int semaphores[SEMCOUNT];
+int startTOD, stopTOD;
 
 void scheduler () {
     
     if (currentProcess != NULL){
-        STCK(startTOD);
+        STCK(stopTOD);
+        currentProcess->p_time = currentProcess->p_time + (stopTOD - startTOD);
     }
     
     if (emptyProcQ(readyQue)){
