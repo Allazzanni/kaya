@@ -4,6 +4,29 @@ extern int processCount, softBlockCount;
 extern pcb_t* currentProcess, readyQue;
 extern int semaphores[SEMCOUNT];
 
+HIDDEN void sys1(state_t* oldState);
+HIDDEN void sys2();
+HIDDEN void sys3(state_t* oldState);
+HIDDEN void sys4(state_t* oldState);
+HIDDEN void sys5(state_t* oldState);
+HIDDEN void sys6(state_t* oldState);
+HIDDEN void sys7(state_t* oldState);
+HIDDEN void sys8(state_t* oldState);
+HIDDEN void genocide(pcb_t* deadMan);
+HIDDEN int findWaldo (state_t* oldState);
+HIDDEN void theLordsJudgement(state_t* pagan, int plee);
+
+void copyState(state_t* source, state_t* destination);
+
+void tlbManager(){
+    state_t* oldState = (state_t*) TBLMGMTOLDAREA;
+    theLordsJudgement(oldState, TLBTRAP);
+}
+
+void pgmTrap(){
+    state_t* oldState = (state_t*) PGMTRAPOLDAREA;
+    theLordsJudgement(oldState, PROGTRAP);
+}
 
 syscallHandler (){
     state_t* oldState = (state_t*) 0x20000348
@@ -12,7 +35,7 @@ syscallHandler (){
     unsigned int a0 = oldState->s_a0;
     
     if (a0 >= 9 && a0 < 255){
-        passUpOrDie();
+        theLordsJudgement();
     } else {
         if (/*status is in kernal mode */){
             oldState->s_pc = oldState->s_pc + 4;
@@ -42,7 +65,7 @@ syscallHandler (){
                     sys8(oldState);
                 break;
                 default:
-                    /*pass up or die*/
+                    theLordsJudgement(oldState, SYSTRAP);
                 break;
             }
         } else {
@@ -53,9 +76,10 @@ syscallHandler (){
             pgmTrap();
         }
     }
+    PANIC();
 }
 
-void sys1 (state_t* callerID){
+HIDDEN void sys1 (state_t* callerID){
     p = allocPCB ();
     if (p == NULL){
         callerID->s_v0 = -1;
@@ -71,13 +95,13 @@ void sys1 (state_t* callerID){
     LDST (callerID);
 }
 
-void sys2 () {
+HIDDEN void sys2 () {
     genocide (currentProcess);
     currentProcess = NULL;
     scheduler ();
 }
 
-void genocide (pcb_t* deadMan){
+HIDDEN void genocide (pcb_t* deadMan){
     if (currentProcess == deadMan){
         outChild(deadMan)
     } else {
@@ -102,21 +126,25 @@ void genocide (pcb_t* deadMan){
     --processCount;
 }
 
-void sys3 (state_t* oldState){
+HIDDEN void sys3 (state_t* oldState){
     pcb_t* new = NULL;
     int* semAdd = oldState->s_a1;
     (*semAdd)++;
     if ((*semAdd) <= 0){
         new = removeBlocked(semAdd);
-        new ->pcb_semAdd = NULL;
-        insertProcQ(&(readyQueue), new);
+        if (new != NULL){
+            new ->psemadd = NULL;
+            insertProcQ(&(readyQueue), new);
+        }
     }
+    LDST (oldState);
 }
 
-void sys4 (state_t* oldState){
+HIDDEN void sys4 (state_t* oldState){
     int* semAdd = oldState->s_a1;
     (*semAdd)--;
     if ((*semAdd) < 0){
+        /* grant and chris's solution
         STCK(TODStopped);
         current = TODStopped - TODStarted;
         currentProcess->pcb_time = currentProcess->pcb_time + current;
@@ -124,12 +152,128 @@ void sys4 (state_t* oldState){
         insertBlocked(semAdd, currentProcess);
         currentProcess = NULL;
         scheduler();
+         */
+        /* my solution */
+        copyState(oldState, &(currentProcess->p_state));
+        insertBlocked(semAdd, currentProcess);
+        scheduler();
+    }
+    LDST(oldState);
+}
+
+HIDDEN void sys5 (state_t* oldState){
+    switch (oldState->s_a1){
+        case TLBTRAP:
+            if (currentProcess->newTLB != NULL){
+                sys2();
+            }
+            currentProcess->oldTLB = (state_t*) oldState->s_a2;
+            currentProcess->newTLB = (state_t*) oldState->s_a3;
+            break;
+        case PROGTRAP:
+            if (currentProcess->newPgm != NULL){
+                sys2();
+            }
+            currentProcess->oldPgm = (state_t*) oldState->s_a2;
+            currentProcess->newPgm = (state_t*) oldState->s_a3;
+            break;
+        case SYSTRAP:
+            if (currentProcess->newSys != NULL){
+                sys2();
+            }
+            currentProcess->oldSys = (state_t*) oldState->s_a2;
+            currentProcess->newSys = (state_t*) oldState->s_a3;
+            break;
+    }
+    LDST(oldState);
+}
+
+HIDDEN void sys6 (state_t* doesNotOwnAWatch){
+    cpu_t stopTOD;
+    STCK(stopTOD);
+    cpu_t elapsedTime = stopTOD - startTOD;
+    currentProcess->p_time = currentProcess->p_time + elapsedTime;
+    doesNotOwnAWatch->s_v0 = currentProcess->p_time;
+    STCK(startTOD);
+    LDST(doesNotOwnAWatch);
+}
+
+HIDDEN void sys7 (state* oldState){
+    int* semAdd = (int*) &(semaphores[SEMCOUNT-1]);
+    (*semAdd)--;
+    insertBlocked(semAdd, currentProcess);
+    copyState(oldState, &(currentProcess->p_state));
+    softBlockCount++;
+    scheduler();
+}
+
+HIDDEN void sys8 (state* oldState){
+    int waldo = findWaldo (oldState);
+    int* semAdd = &(semaphores[waldo]);
+    *semAdd--;
+    if (semAdd < 0){
+        insertBlocked (semAdd, currentProcess);
+        copyState(oldState, &(currentProcess->p_state));
+        softBlockCount++;
+        scheduler();
+    } else {
+        PANIC();
     }
 }
 
-void sys6 (state_t* doesNotOwnAWatch){
-    int timeRemaining = 5000 - getTIMER();
-    int clock = ;
-    return clock + timeRemaining;
+HIDDEN int findWaldo (state_t* oldState){
+    int line, device, read, waldo;
+    line = oldState->s_a1;
+    device = oldState->s_a0;
+    if (line < DISKINT || line > TERMINT){
+        sys2()
+    }
+    /* basic equation is that we take the devices per int (DEVPERINT) and
+     we multiply it by its device (removings the first few devices that do
+     not have 8 semaphores and then add that to the device location and
+     we find waldo */
+    if (line == TERMINT && read == TRUE){
+        waldo = DEVPERINT*(line - DEVNOSEM + read) + device;
+    } else {
+        waldo = DEVPERINT*(line - DEVNOSEM) + device;
+    }
+    return waldo;
+}
+
+/* passUpOrDie */
+void theLordsJudgement(state_t* pagan, int plee) {
+    switch (plee){
+        case SYSTRAP:
+            if (currentProcess->newSys != NULL){
+                copyState(pagan, currentProcess->sysOld);
+                LDST(currentProcess)
+            }
+            break;
+        case TLBTRAP:
+            if (currentProcess->newTLB != NULL){
+                copyState(pagan, currentProcess->oldTLB);
+                LDST(currentProcess->oldTLB);
+            }
+            break;
+        case PROGTRAP:
+            if (currentProcess->oldPgm != NULL){
+                copyState(pagan, currentProcess->oldPgm);
+                LDST (currentProcess->oldPgm);
+            }
+            break;
+    }
+    /* burn at the stake */
+    sys2();
+}
+
+HIDDEN void copyState(state_t* source, state_t* destination){
+    int i;
+    destination->s_asid = source->s_asid;
+    destination->s_status = source->s_status;
+    destination->s_pc = source->s_pc;
+    destination->s_cause = source->s_cause;
+    for (i=0, i < STATEREGNUM, i++){
+        destination->s_reg[i] = source->s_reg[i];
+    }
 }
 

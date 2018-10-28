@@ -65,6 +65,7 @@
 #define TRAPTYPES	3
 
 
+
 /* device interrupts */
 #define DISKINT		3
 #define TAPEINT 	4

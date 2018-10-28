@@ -50,6 +50,10 @@ typedef struct {
 
 #define DEVINTNUM 5
 #define DEVPERINT 8
+/*since the first three devices do not have 8 semaphores,
+ This is needed in calculations that also use the above 2 so
+ I put it here */
+#define DEVNOSEM 3
 typedef struct {
 	unsigned int rambase;
 	unsigned int ramsize;
