@@ -88,6 +88,16 @@
 #define TRANSTATUS      2
 #define TRANCOMMAND     3
 
+#define IPAREA 0x0000FF00
+#define IPONE 0x1
+#define IPTWO 0x2
+#define IPTHREE 0x4
+#define IPFOUR 0x8
+#define IPFIVE 0x10
+#define IPSIX 0x20
+#define IPSEVEN 0x40
+#define IPEIGHT 0x80
+
 
 /* device common STATUS codes */
 #define UNINSTALLED	0

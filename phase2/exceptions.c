@@ -3,7 +3,6 @@
 extern int processCount, softBlockCount;
 extern pcb_t* currentProcess, readyQue;
 extern int semaphores[SEMCOUNT], psuedoClock;
-extern cpu_t
 
 HIDDEN void sys1(state_t* oldState);
 HIDDEN void sys2();
@@ -231,7 +230,11 @@ HIDDEN void sys7 (state* oldState){
 }
 
 HIDDEN void sys8 (state* oldState){
-    int waldo = findWaldo (oldState);
+    int line, device, read;
+    line = oldState->s_a1;
+    device = oldState->s_a0;
+    read = oldState->s_a3;
+    int waldo = findWaldo (line, device, read);
     int* semAdd = &(semaphores[waldo]);
     *semAdd--;
     if (*(semAdd) < 0){
@@ -245,10 +248,8 @@ HIDDEN void sys8 (state* oldState){
     LDST(&(currentProcess->p_state));
 }
 
-HIDDEN int findWaldo (state_t* oldState){
-    int line, device, read, waldo;
-    line = oldState->s_a1;
-    device = oldState->s_a0;
+int findWaldo (int line, int device, int read){
+    int waldo;
     if (line < DISKINT || line > TERMINT){
         sys2()
     }
